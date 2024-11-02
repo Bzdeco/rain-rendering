@@ -6,7 +6,7 @@ from config.utils import focal_length_mm, intrinsics, compute_camera_motion_velo
 
 
 DATASET_FOLDER = Path("/home/bzdeco/Documents/EPFL/CVLab/Final/adverse-weather-eval/rain_datasets/data/source/daedalean")
-RAIN_FALLRATE = 20  # in mm/h  FIXME: adjust accordingly to severity
+RAIN_FALLRATE = 10  # in mm/h  FIXME: adjust accordingly to severity
 
 
 def resolve_paths(params):

@@ -184,17 +184,17 @@ if __name__ == "__main__":
 
         # Wait for an available thread
         print("Wait for threads")
-        while np.sum([t[2].isAlive() for t in threads]) >= max_thread:
+        while np.sum([t[2].is_alive() for t in threads]) >= max_thread:
             time.sleep(2)
 
-        thread_ended_mask = np.array([not t[2].isAlive() and t[2]._started.is_set() for t in threads])
+        thread_ended_mask = np.array([not t[2].is_alive() and t[2]._started.is_set() for t in threads])
         for t in threads[thread_ended_mask]:
             print("\nThread ended: ", t[2].toString())
         threads = threads[~thread_ended_mask]
 
         # Wait for all threads if no remaining ones
         if np.sum(np.array([not t[2]._started.is_set() for t in threads])) == 0:
-            while np.sum([t[2].isAlive() for t in threads]) != 0:
+            while np.sum([t[2].is_alive() for t in threads]) != 0:
                 time.sleep(2)
 
             print("All threads completed")

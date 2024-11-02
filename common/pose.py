@@ -1,12 +1,10 @@
 import math
 from dataclasses import dataclass
-from typing import Union, List
+from typing import Union
 
 import numpy as np
 import pyproj
 import quaternion
-import torch
-from einops import pack
 from pyproj import CRS
 
 MERCATOR_EPSG = 3857
@@ -145,27 +143,7 @@ def frd_translation_to_xyz(frd_translation_vector: np.ndarray) -> np.ndarray:
     return np.asarray([right, down, forward])
 
 
-@dataclass(eq=True, frozen=True)
-class SimulatedCameraPose(CameraPose):
-    position: np.ndarray
-    rotation: EulerRotation
-
-    @staticmethod
-    def origin_pose() -> "SimulatedCameraPose":
-        return SimulatedCameraPose(
-            position=np.asarray([0, 0, 0]),
-            rotation=EulerRotation(
-                yaw=0, pitch=0, roll=0
-            )
-        )
-
-
-def translation(
-    ref_pose: Union[SimulatedCameraPose, CameraPose], current_pose: Union[SimulatedCameraPose, CameraPose]
-) -> np.ndarray:
-    if isinstance(ref_pose, SimulatedCameraPose) and isinstance(current_pose, SimulatedCameraPose):
-        return current_pose.position - ref_pose.position
-
+def translation(ref_pose: CameraPose, current_pose: CameraPose) -> np.ndarray:
     ref_geo_xyz = ref_pose.position.to_geodetic_xyz()
     current_geo_xyz = current_pose.position.to_geodetic_xyz()
     xyz_translation = current_geo_xyz - ref_geo_xyz
@@ -177,37 +155,3 @@ def translation(
     translation_frd_ltp = rot_0 @ translation_ned_ltp
 
     return frd_translation_to_xyz(translation_frd_ltp)
-
-
-def transformation_matrix(start_pose: CameraPose, target_pose: CameraPose) -> np.ndarray:
-    """
-    Combined rotation and translation matrix from start_pose to target_pose (3x4 matrix).
-    """
-    r = quaternion.as_rotation_matrix(rotation(start_pose, target_pose))
-    t = translation(start_pose, target_pose)
-    return np.concatenate((r, t[:, np.newaxis]), axis=1)
-
-
-def invert_transformation_matrix(
-    matrix: Union[np.ndarray, torch.Tensor], batched: bool = False
-) -> Union[np.ndarray, torch.Tensor]:
-    r, t = matrix[..., :3, :3], matrix[..., :3, -1:]
-    r_inv = r.transpose(-1, -2)
-    t_inv = - t
-
-    packing_pattern = "b n *" if batched else "n *"
-    breakpoint()
-    return pack([r_inv, t_inv], packing_pattern)[0]  # [B, 3, 4] or [3, 4]
-
-
-def flight_trajectory(poses: List[CameraPose], with_altitude: bool = False) -> np.ndarray:
-    initial_pose = poses[0]
-    trajectory = np.stack([translation(initial_pose, pose) for pose in poses], axis=0)
-    vertical_offset = np.asarray([0, - initial_pose.position.altitude, 0]) if with_altitude else 0
-    return trajectory + vertical_offset
-
-
-def predicted_6dof_pose_to_transformation_matrix(pose: torch.Tensor) -> torch.Tensor:
-    # pose: [B, 7] containing translation (3) and quaternion (4)
-    # output: [B, 3, 4], combining rotation and translation
-    raise NotImplementedError("Convert predicted poses to transformation matrices")

@@ -32,18 +32,18 @@ def settings():
     # Camera intrinsic parameters
     settings["cam_hz"] = 6                       # Camera Hz (aka FPS) – I guess it's irrelevant as we only have some frames
     settings["cam_CCD_WH"] = [4096, 3000]        # Camera CDD Width and Height (pixels)
-    settings["cam_CCD_pixsize"] = 4.65           # Camera CDD pixel size (micro meters) FIXME
+    settings["cam_CCD_pixsize"] = 3.45           # Camera CDD pixel size (micro meters)
     settings["cam_WH"] = [4096, 3000]            # Camera image Width and Height (pixels)
-    settings["cam_focal"] = 6                    # Focal length (mm) – set for each recording from intrinsics
-    settings["cam_gain"] = 20                    # Camera gain FIXME
-    settings["cam_f_number"] = 6.0               # F-Number FIXME
+    settings["cam_focal"] = 6                    # Focal length (mm) – re-set for each recording from intrinsics
+    settings["cam_gain"] = 0                     # Camera gain
+    settings["cam_f_number"] = 6.0               # F-Number FIXME (probably higher than lower to obtain wider depth of field)
     settings["cam_focus_plane"] = 100_000_000.0  # Focus plane (meter) – approximate "infinity", i.e. far away
-    settings["cam_exposure"] = 2                 # Camera exposure (ms) FIXME
+    settings["cam_exposure"] = 1                 # Camera exposure (ms) – was between 0.5 and 0.75 most of the time
 
     # Camera extrinsic parameters (right-handed coordinate system)  FIXME should those be changed for a more appropriate angle?
-    settings["cam_pos"] = [1.5, 1.5, 0.3]     # Camera pos (meter)
-    settings["cam_lookat"] = [1.5, 1.5, -1.]  # Camera look at vector (meter)
-    settings["cam_up"] = [0., 1., 0.]         # Camera up vector (meter)
+    settings["cam_pos"] = [1.5, 1.5, 0.3]        # Camera pos (meter)
+    settings["cam_lookat"] = [1.5, 1.5, -1.]     # Camera look at vector (meter)
+    settings["cam_up"] = [0., 1., 0.]            # Camera up vector (meter)
 
     # Sequence-wise settings
     # Note: sequence object and settings are merged, hence any setting can be overwritten sequence-wise

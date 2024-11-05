@@ -80,8 +80,17 @@ def parse_pose(pose_filepath: Path) -> CameraPose:
         )
 
 
+DEFAULT_SPEED = 60  # km/h
+
+
 def compute_camera_motion_velocities(recording: str, timestamps: List[int]) -> List[float]:
+    if len(timestamps) == 1:
+        return [DEFAULT_SPEED]  # default speed
+
     pose_filepaths = [poses_folder / recording / f"{timestamp}_pose.csv" for timestamp in sorted(timestamps)]
+    if all(map(lambda path: not path.exists(), pose_filepaths)):
+        return [DEFAULT_SPEED] * len(pose_filepaths)
+
     poses = list(map(parse_pose, pose_filepaths))
     time_diff = np.diff(timestamps) * 1e-9  # in seconds
     displacements = np.asarray([

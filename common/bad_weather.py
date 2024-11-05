@@ -143,7 +143,7 @@ class DBManager:
             self.ratio = np.append(self.ratio, tmp[-1].shape[1] / tmp[-1].shape[0])
 
         self.ratio = np.unique(self.ratio)
-        self.streaks_light = np.array(tmp)
+        self.streaks_light = tmp
 
     def load_streaks_from_xml(self, dataset, settings, image_shape_WH, use_pickle=True, verbose=True):
         '''
@@ -380,9 +380,13 @@ class RainRenderer:
             drop_xyY[np.isnan(drop_xyY)] = 0
 
             # Using cache 2.5x faster (Raoul)
-            if 'mask_env_float64' not in cache or not np.all(solid_angle_map.shape[:2] == cache['mask_env_bool'].shape[:2]):
+            if (
+                'mask_env_float64' not in cache or
+                'mask_env_bool' not in cache or
+                not np.all(solid_angle_map.shape[:2] == cache['mask_env_bool'].shape[:2])
+            ):
                 cache['mask_env_float64'] = np.zeros(env_map_xyY.shape[:2], dtype=np.float64)
-                cache['mask_env_bool'] = np.zeros(env_map_xyY.shape[:2], dtype=np.bool)
+                cache['mask_env_bool'] = np.zeros(env_map_xyY.shape[:2], dtype=bool)
 
             cache['mask_env_float64'][:] = 0.
             cv2.fillConvexPoly(cache['mask_env_float64'], s, 1)
@@ -831,7 +835,7 @@ class EnvironmentMapGenerator:
         # indices which are empty
         ind_not_filled = np.where(mask_temp == 0)
 
-        fill_mat_up = np.zeros((ind_not_filled[0].shape[0], 2)).astype(np.int)
+        fill_mat_up = np.zeros((ind_not_filled[0].shape[0], 2)).astype(int)
         for i in range(fill_mat_up.shape[0]):
             x_ind = ind_not_filled[1][i]
             fill_mat_up[i] = xy_fill[x_ind]
@@ -845,7 +849,7 @@ class EnvironmentMapGenerator:
         # indices which are empty
         ind_not_filled = np.where(mask_temp == 0)
 
-        fill_mat_down = np.zeros((ind_not_filled[0].shape[0], 2)).astype(np.int)
+        fill_mat_down = np.zeros((ind_not_filled[0].shape[0], 2)).astype(int)
         for i in range(fill_mat_down.shape[0]):
             x_ind = ind_not_filled[1][i]
             fill_mat_down[i] = xy_fill[x_ind]

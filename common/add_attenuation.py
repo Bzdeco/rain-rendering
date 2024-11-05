@@ -34,6 +34,9 @@ class FogRain:
         # gain is the camera gain for camera (Flea2 used in kitti, acA1600-60gm/gc in NuScenes)
         self.camera_gain = camera_gain
 
+        print(f"Fog rain parameters: rain_intensity={self.rain_intensity} angle={self.angle} focal={self.focal}, "
+              f"f_number={self.f_number}, exposure_time={self.exposure_time} camera_gain={self.camera_gain}")
+
         self.current_image = np.array([])
         self.current_depth = np.array([])
 

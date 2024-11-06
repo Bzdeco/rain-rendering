@@ -425,31 +425,31 @@ class Generator:
                     assert streak_dict.__len__() <= 2 ** 16, \
                         "Assert that the number of drops doesn't overpass the uint16 rain_mask capacity"
 
-                    # streak_list = list(streak_dict.values())
-                    # drop_num = len(streak_list)
-                    # drop_process_t0 = time.time()
-                    # for drop_idx, drop_dict in enumerate(streak_list):
-                    #     # Returns the rainy image, rainy_mask, drop, blended drop and the starting coord of
-                    #     # the drop in image
-                    #     rainy_bg, rainy_mask, rainy_saturation_mask, \
-                    #     drop, blended_drop, minC = self.compute_drop(bg, drop_dict, rainy_bg,
-                    #                                                  rainy_mask, rainy_saturation_mask)
-                    #     if blended_drop is not None:
-                    #         rain_layer = self.renderer.make_rain_layer(drop, blended_drop, rain_layer, rainy_mask, minC)
-                    #     else:
-                    #         print("Trace: rain drop {} in sequence {} in image {} ({})".format(drop_idx,
-                    #                                                                            sequence, f_idx,
-                    #                                                                            f_name_idx))
-                    #
-                    #     # Compute progress
-                    #     avg_drop_time = (time.time() - drop_process_t0) / (drop_idx + 1)
-                    #     if self.verbose or drop_idx == 0:
-                    #         sys.stdout.write(
-                    #             '\r' + my_utils.process_eta_str(process_t0, folder_idx, folders_num, folder_t0, sim_idx,
-                    #                                             sim_num,
-                    #                                             sim_t0, f_idx, f_num, frame_t0, drop_idx,
-                    #                                             drop_num) + '\t\t' + '%.1fms /drop' % (
-                    #                     1000. * avg_drop_time) + '       ')
+                    streak_list = list(streak_dict.values())
+                    drop_num = len(streak_list)
+                    drop_process_t0 = time.time()
+                    for drop_idx, drop_dict in enumerate(streak_list):
+                        # Returns the rainy image, rainy_mask, drop, blended drop and the starting coord of
+                        # the drop in image
+                        rainy_bg, rainy_mask, rainy_saturation_mask, \
+                        drop, blended_drop, minC = self.compute_drop(bg, drop_dict, rainy_bg,
+                                                                     rainy_mask, rainy_saturation_mask)
+                        if blended_drop is not None:
+                            rain_layer = self.renderer.make_rain_layer(drop, blended_drop, rain_layer, rainy_mask, minC)
+                        else:
+                            print("Trace: rain drop {} in sequence {} in image {} ({})".format(drop_idx,
+                                                                                               sequence, f_idx,
+                                                                                               f_name_idx))
+
+                        # Compute progress
+                        avg_drop_time = (time.time() - drop_process_t0) / (drop_idx + 1)
+                        if self.verbose or drop_idx == 0:
+                            sys.stdout.write(
+                                '\r' + my_utils.process_eta_str(process_t0, folder_idx, folders_num, folder_t0, sim_idx,
+                                                                sim_num,
+                                                                sim_t0, f_idx, f_num, frame_t0, drop_idx,
+                                                                drop_num) + '\t\t' + '%.1fms /drop' % (
+                                        1000. * avg_drop_time) + '       ')
 
                     # Create all output directories
                     os.makedirs(os.path.dirname(out_rainy_path), exist_ok=True)

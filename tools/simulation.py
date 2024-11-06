@@ -32,7 +32,7 @@ assert platform.architecture()[0] == '64bit', "Only 64 bits OS are supported for
 bin_platform = sys.platform[:3]
 bin_bitness = 'x64'
 
-stats_start_time = 5.0  # Stats starting time (s)
+stats_start_time = 0.0  # Stats starting time (s)
 
 class WeatherSimulation(threading.Thread):
     def __init__(self, id, path, options, weather, redo=False, deactivate_window_mode=True,

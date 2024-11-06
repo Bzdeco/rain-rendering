@@ -35,8 +35,8 @@ def settings():
     settings["cam_CCD_pixsize"] = 3.45           # Camera CDD pixel size (micro meters)
     settings["cam_WH"] = [4096, 3000]            # Camera image Width and Height (pixels)
     settings["cam_focal"] = 6                    # Focal length (mm) – re-set for each recording from intrinsics
-    settings["cam_gain"] = 0                     # Camera gain FIXME potential it makes issues, bring back to 20
-    settings["cam_f_number"] = 6.0               # F-Number FIXME (probably higher than lower to obtain wider depth of field)
+    settings["cam_gain"] = 20                     # Camera gain FIXME potential it makes issues, bring back to 20
+    settings["cam_f_number"] = 2.2               # F-Number FIXME (probably higher than lower to obtain wider depth of field)
     settings["cam_focus_plane"] = 100_000_000.0  # Focus plane (meter) – approximate "infinity", i.e. far away
     settings["cam_exposure"] = 1                 # Camera exposure (ms) – was between 0.5 and 0.75 most of the time
 

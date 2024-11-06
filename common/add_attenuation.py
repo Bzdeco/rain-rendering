@@ -91,7 +91,16 @@ class FogRain:
 
     def fog_rain_layer(self, image, depth):
         self.current_image = image.copy()
-        self.current_depth = depth.copy()
+
+        used_depth = depth.copy()
+        divisor = 200.0
+        used_depth /= divisor
+        max_set_depth = 10_000_000 / divisor
+        max_known_depth = np.max(used_depth[used_depth < max_set_depth])
+        used_depth[used_depth == max_set_depth] = max_known_depth
+        self.current_depth = used_depth
+
+        print("Depth", self.current_depth.min(), self.current_depth.max())
 
         simulated_image = np.clip(self.calc_l(), 0, 1)
 

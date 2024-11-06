@@ -93,7 +93,7 @@ class FogRain:
         self.current_image = image.copy()
 
         used_depth = depth.copy()
-        divisor = 200.0
+        divisor = 150.0
         used_depth /= divisor
         max_set_depth = 10_000_000 / divisor
         max_known_depth = np.max(used_depth[used_depth < max_set_depth])

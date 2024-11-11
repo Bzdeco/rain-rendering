@@ -45,7 +45,7 @@ def settings():
     settings["cam_lookat"] = [1.5, 1.5, -1.]     # Camera look at vector (meter)
     settings["cam_up"] = [0., 1., 0.]            # Camera up vector (meter)
 
-    settings["sim_duration"] = 0.5  # second
+    settings["sim_duration"] = 0.5  # second, to shorten simulations
 
     # Sequence-wise settings
     # Note: sequence object and settings are merged, hence any setting can be overwritten sequence-wise

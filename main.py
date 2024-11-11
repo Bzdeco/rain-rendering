@@ -124,6 +124,11 @@ def check_arg(args):
                         help='Force particles simulator to run even if simulation exist',
                         action='store_true')
 
+    parser.add_argument(
+        "--only-simulation", action="store_true", default=False,
+        help="If set will only run the simulation, without rendering"
+    )
+
     results = parser.parse_args(args)
 
     assert not results.force_particles or results.conflict_strategy != "skip", "If particles simulator is forced, cannot skip"
@@ -226,6 +231,7 @@ if __name__ == "__main__":
     print("\nBuilding internal parameters...")
     args = check_arg(sys.argv[1:])
 
-    print("\nRunning renderers...")
-    generator = Generator(args)
-    generator.run()
+    if not args.only_simulation:
+        print("\nRunning renderers...")
+        generator = Generator(args)
+        generator.run()

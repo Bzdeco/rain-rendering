@@ -35,15 +35,21 @@ RUN mkdir -p /usr/local/OpenSceneGraph/data && cp -r osg-data/* /usr/local/OpenS
 RUN echo 'export OSG_FILE_PATH="/usr/local/OpenSceneGraph/data:/usr/local/OpenSceneGraph/data/Images"' >> ~/.profile
 RUN . ~/.profile
 
-## Boost installation
-#RUN wget -O boost_1_62_0.tar.gz https://sourceforge.net/projects/boost/files/boost/1.62.0/boost_1_62_0.tar.gz/download
-#RUN tar xzvf boost_1_62_0.tar.gz
-#WORKDIR boost_1_62_0
-#RUN apt-get install -y build-essential g++ python3-dev autotools-dev libicu-dev libbz2-dev
-#RUN ./bootstrap.sh --prefix=/usr/local
-#RUN user_configFile=`find $PWD -name user-config.jam` && echo "using mpi ;" >> $user_configFile
-#RUN ./b2 --with=all -j 6 install
-#RUN sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/local.conf'
-#RUN ldconfig
+# Boost installation
+RUN wget -O boost_1_62_0.tar.gz https://sourceforge.net/projects/boost/files/boost/1.62.0/boost_1_62_0.tar.gz/download
+RUN tar xzvf boost_1_62_0.tar.gz
+WORKDIR boost_1_62_0
+RUN apt-get install -y build-essential g++ python3-dev autotools-dev libicu-dev libbz2-dev
+RUN ./bootstrap.sh --prefix=/usr/local
+RUN user_configFile=`find $PWD -name user-config.jam` && echo "using mpi ;" >> $user_configFile
+
+# Fixed issue according to https://stackoverflow.com/a/54991698
+COPY builtin_converters.cpp /boost_1_62_0/libs/python/src/converter
+RUN ./b2 -q --with=all install  # -j6 to speedup
+RUN sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/local.conf'
+RUN ldconfig
+
+RUN pip install --no-cache-dir pyproj
+RUN pip install --no-cache-dir numpy-quaternion
 
 # Not installing OpenCV as it is already installed in this image

@@ -5,8 +5,9 @@ from pathlib import Path
 from config.utils import focal_length_mm, intrinsics, compute_camera_motion_velocities
 
 
+# DATASET_FOLDER = Path("/scratch/cvlab/home/gwizdala/dataset/rain/data/source/daedalean")
 DATASET_FOLDER = Path("/home/bzdeco/Documents/EPFL/CVLab/Final/adverse-weather-eval/rain_datasets/data/source/daedalean")
-RAIN_FALLRATE = 10  # in mm/h  FIXME: adjust accordingly to severity
+RAIN_FALLRATE = 100  # in mm/h  FIXME: adjust accordingly to severity
 
 
 def resolve_paths(params):
@@ -45,7 +46,7 @@ def settings():
     settings["cam_lookat"] = [1.5, 1.5, -1.]     # Camera look at vector (meter)
     settings["cam_up"] = [0., 1., 0.]            # Camera up vector (meter)
 
-    settings["sim_duration"] = 0.5  # second, to shorten simulations
+    settings["sim_duration"] = 1.0  # second, to shorten simulations
 
     # Sequence-wise settings
     # Note: sequence object and settings are merged, hence any setting can be overwritten sequence-wise
@@ -70,5 +71,6 @@ def settings():
             "cam_motion": compute_camera_motion_velocities(recording, timestamps),  # in km/h
             "rain_fallrate": [RAIN_FALLRATE] * n_frames
         }
+        settings["sequences"][sequence]["sim_duration"] = 1.0
 
     return settings

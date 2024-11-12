@@ -52,17 +52,19 @@ def settings():
     # Note: sequence object and settings are merged, hence any setting can be overwritten sequence-wise
     settings["sequences"] = {}
 
-    for sequence_folder in DATASET_FOLDER.glob("*"):
+    for sequence_folder in sorted(list(DATASET_FOLDER.glob("*"))):
         sequence = sequence_folder.name
-        separator_idx = sequence.rfind("/")
-        recording = f"{sequence[:separator_idx]}/{sequence[separator_idx + 1:]}"
-        frames_filepaths = list((sequence_folder / "rgb").glob("*.png"))
+        separator_part = sequence.rfind("_")
+        separator_rec = sequence[:separator_part].rfind("_")
+        recording = f"{sequence[:separator_rec]}/{sequence[separator_rec + 1:separator_part]}"
+
+        frames_filepaths = sorted(list((sequence_folder / "rgb").glob("*.png")))
         timestamps = list(map(lambda fp: int(fp.stem), frames_filepaths))
         n_frames = len(frames_filepaths)
 
         settings["sequences"][sequence] = {}
         settings["sequences"][sequence]["cam_focal"] = focal_length_mm(
-            intrinsics_matrix=intrinsics(recording),
+            intrinsics_matrix=intrinsics(recording, warn=True),
             sensor_width_mm=settings["cam_CCD_pixsize"] * settings["cam_CCD_WH"][0] * 1e-3,
             image_width_px=settings["cam_CCD_WH"][0]
         )

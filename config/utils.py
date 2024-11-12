@@ -88,15 +88,20 @@ def compute_camera_motion_velocities(recording: str, timestamps: List[int]) -> L
         return [DEFAULT_SPEED]  # default speed
 
     pose_filepaths = [poses_folder / recording / f"{timestamp}_pose.csv" for timestamp in sorted(timestamps)]
-    if all(map(lambda path: not path.exists(), pose_filepaths)):
-        return [DEFAULT_SPEED] * len(pose_filepaths)
+    poses = [
+        parse_pose(pose_filepath) if pose_filepath.exists() else None
+        for pose_filepath in pose_filepaths
+    ]
 
-    poses = list(map(parse_pose, pose_filepaths))
     time_diff = np.diff(timestamps) * 1e-9  # in seconds
     displacements = np.asarray([
-        np.linalg.norm(translation(start_pose, end_pose))
+        np.linalg.norm(translation(start_pose, end_pose)) if start_pose is not None and end_pose is not None else 0
         for start_pose, end_pose in zip(poses[:-1], poses[1:])
     ])  # in meters
     velocities_m_per_s = displacements / time_diff
     velocities_km_per_h = velocities_m_per_s * 3.6
+
+    velocities_km_per_h[velocities_km_per_h == 0] = DEFAULT_SPEED
+    velocities_km_per_h[~np.isfinite(velocities_km_per_h)] = DEFAULT_SPEED
+
     return [velocities_km_per_h[0]] + velocities_km_per_h.tolist()  # extend by 1 element to provide for all poses

@@ -2,12 +2,17 @@
 import os
 from pathlib import Path
 
+from common.annotations import parse_annotations
 from config.utils import focal_length_mm, intrinsics, compute_camera_motion_velocities
 
 
-# DATASET_FOLDER = Path("/scratch/cvlab/home/gwizdala/dataset/rain/data/source/daedalean")
-DATASET_FOLDER = Path("/home/bzdeco/Documents/EPFL/CVLab/Final/adverse-weather-eval/rain_datasets/data/source/daedalean")
-RAIN_FALLRATE = 100  # in mm/h  FIXME: adjust accordingly to severity
+DATASET_FOLDER = Path("/scratch/cvlab/home/gwizdala/dataset/rain/data/source/daedalean")
+TIMESTAMP_TO_RECORDING = {
+    annotation.frame_timestamp(): annotation.recording()
+    for annotation in parse_annotations(Path("/scratch/cvlab/home/gwizdala/dataset/daedalean/annotations"))
+}
+# DATASET_FOLDER = Path("/home/bzdeco/Documents/EPFL/CVLab/Final/adverse-weather-eval/rain_datasets/data/source/daedalean")
+RAIN_FALLRATE = 100  # in mm/h
 
 
 def resolve_paths(params):
@@ -26,6 +31,7 @@ def resolve_paths(params):
     params.depth = {s: os.path.join(params.dataset_root, s, "depth") for s in params.sequences}
 
     return params
+
 
 def settings():
     settings = {}
@@ -54,9 +60,14 @@ def settings():
 
     for sequence_folder in sorted(list(DATASET_FOLDER.glob("*"))):
         sequence = sequence_folder.name
-        separator_part = sequence.rfind("_")
-        separator_rec = sequence[:separator_part].rfind("_")
-        recording = f"{sequence[:separator_rec]}/{sequence[separator_rec + 1:separator_part]}"
+
+        if sequence.startswith("seq"):
+            timestamp = int(list(map(lambda path: path.stem, (sequence_folder / "rgb").glob("*.png")))[0])
+            recording = TIMESTAMP_TO_RECORDING[timestamp]
+        else:
+            separator_part = sequence.rfind("_")
+            separator_rec = sequence[:separator_part].rfind("_")
+            recording = f"{sequence[:separator_rec]}/{sequence[separator_rec + 1:separator_part]}"
 
         frames_filepaths = sorted(list((sequence_folder / "rgb").glob("*.png")))
         timestamps = list(map(lambda fp: int(fp.stem), frames_filepaths))
